@@ -1,41 +1,45 @@
-# Compiled Lua sources
-luac.out
+local Input = game:GetService("UserInputService")
+local V = false
 
-# luarocks build files
-*.src.rock
-*.zip
-*.tar.gz
+local main = script.Parent
 
-# Object files
-*.o
-*.os
-*.ko
-*.obj
-*.elf
+Input.InputBegan:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.LeftControl then
+        V = not V
+        if V then
+            ForceShiftLock()
+            -- Bloquear el mouse en el centro cuando se activa el ShiftLock
+            game:GetService("UserInputService").MouseBehavior = Enum.MouseBehavior.LockCenter
+        else
+            EndForceShiftLock()
+            -- Desbloquear el mouse cuando se desactiva el ShiftLock
+            game:GetService("UserInputService").MouseBehavior = Enum.MouseBehavior.Default
+        end
+    end
+end)
 
-# Precompiled Headers
-*.gch
-*.pch
+local g = nil
+local GameSettings = UserSettings():GetService("UserGameSettings")
+local J = nil
 
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
-*.def
-*.exp
+function ForceShiftLock()
+    local i, k = pcall(function()
+        return GameSettings.RotationType
+    end)
+    _ = i
+    g = k
+    J = game:GetService("RunService").RenderStepped:Connect(function()
+        pcall(function()
+            GameSettings.RotationType = Enum.RotationType.CameraRelative
+        end)
+    end)
+end
 
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
-
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
-
+function EndForceShiftLock()
+    if J then
+        pcall(function()
+            GameSettings.RotationType = g or Enum.RotationType.MovementRelative
+        end)
+        J:Disconnect()
+    end
+end
