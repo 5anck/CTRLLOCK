@@ -52,28 +52,10 @@ end
 
 
 
--- Función para activar el chat cuando se presiona "/"
-local function ActivarChat()
-    -- Obtener el servicio de UserInput
-    local userInputService = game:GetService("UserInputService")
-    
-    -- Simular la pulsación de la tecla "/"
-    userInputService.TextBoxFocused:Connect(function(textBox)
-        if textBox and textBox:IsA("TextBox") then
-            -- No hacer nada si ya está en un TextBox
-            return
-        end
-        
-        -- Activar el chat
-        userInputService:SetGlobalGuiInset(UDim2.new(0, 0, 0, 36))
-        userInputService.OverrideTextBox = nil
-        userInputService:SendKeysPressed("/")
-    end)
+local Mouse = game.Players.LocalPlayer:GetMouse()
+game:GetService("UserInputService").InputBegan:Connect(function(Input, IsTyping)
+if IsTyping then return end
+if Input.KeyCode == Enum.KeyCode.KeypadDivide then
+game:GetService("VirtualInputManager"):SendKeyEvent(true,Enum.KeyCode.KeypadDivide,false,game)
 end
-
--- Detectar cuando se presiona la tecla "/"
-game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
-    if input.KeyCode == Enum.KeyCode.Slash then
-        ActivarChat()
-    end
 end)
