@@ -1,45 +1,36 @@
+-- URLs de las imágenes del cursor
+local OFF = "rbxasset://textures/ui/mouseLock_off@2x.png"
+local ON = "rbxasset://textures/ui/mouseLock_on@2x.png"
+
+-- Obtener los servicios necesarios
 local Input = game:GetService("UserInputService")
-local V = false
+local GameSettings = UserSettings():GetService("UserGameSettings")
 
-local main = script.Parent
+-- Variable para controlar el estado de Shift Lock
+local ShiftLockEnabled = false
 
+-- Función para activar Shift Lock
+local function ForceShiftLock()
+    local originalRotationType = GameSettings.RotationType
+    GameSettings.RotationType = Enum.RotationType.CameraRelative
+    ShiftLockEnabled = true
+    script.Parent.MouseIcon = ON  -- Cambiar el cursor a ON
+end
+
+-- Función para desactivar Shift Lock
+local function EndForceShiftLock()
+    GameSettings.RotationType = Enum.RotationType.MovementRelative
+    ShiftLockEnabled = false
+    script.Parent.MouseIcon = OFF  -- Cambiar el cursor a OFF
+end
+
+-- Manejar el evento de tecla presionada
 Input.InputBegan:Connect(function(input)
     if input.KeyCode == Enum.KeyCode.LeftControl then
-        V = not V
-        if V then
-            ForceShiftLock()
-            -- Bloquear el mouse en el centro cuando se activa el ShiftLock
-            game:GetService("UserInputService").MouseBehavior = Enum.MouseBehavior.LockCenter
-        else
+        if ShiftLockEnabled then
             EndForceShiftLock()
-            -- Desbloquear el mouse cuando se desactiva el ShiftLock
-            game:GetService("UserInputService").MouseBehavior = Enum.MouseBehavior.Default
+        else
+            ForceShiftLock()
         end
     end
 end)
-
-local g = nil
-local GameSettings = UserSettings():GetService("UserGameSettings")
-local J = nil
-
-function ForceShiftLock()
-    local i, k = pcall(function()
-        return GameSettings.RotationType
-    end)
-    _ = i
-    g = k
-    J = game:GetService("RunService").RenderStepped:Connect(function()
-        pcall(function()
-            GameSettings.RotationType = Enum.RotationType.CameraRelative
-        end)
-    end)
-end
-
-function EndForceShiftLock()
-    if J then
-        pcall(function()
-            GameSettings.RotationType = g or Enum.RotationType.MovementRelative
-        end)
-        J:Disconnect()
-    end
-end
