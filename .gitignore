@@ -45,33 +45,3 @@ function EndForceShiftLock()
         J:Disconnect()
     end
 end
-
-
-
---Funcion para de "/" como atajo para escribir en el chat de roblox.
-
-
-
--- Función para activar el chat cuando se presiona KeypadDivide
-local function ActivarChat()
-    local userInputService = game:GetService("UserInputService")
-    
-    -- Verificar si ya hay un TextBox enfocado para evitar activar el chat accidentalmente
-    userInputService.TextBoxFocused:Connect(function(textBox)
-        if textBox and textBox:IsA("TextBox") then
-            return
-        end
-        
-        -- Activar el chat
-        userInputService:SetGlobalGuiInset(UDim2.new(0, 0, 0, 36))
-        userInputService.OverrideTextBox = nil
-        userInputService:SendKeysPressed(Enum.KeyCode.KeypadDivide)
-    end)
-end
-
--- Detectar cuando se presiona la tecla KeypadDivide
-game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
-    if input.KeyCode == Enum.KeyCode.KeypadDivide then
-        ActivarChat()
-    end
-end)
